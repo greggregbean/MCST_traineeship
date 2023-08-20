@@ -1,0 +1,252 @@
+
+dt64d:     формат файла elf64-x86-64
+
+
+Дизассемблирование раздела .init:
+
+0000000000001000 <_init>:
+    1000:	f3 0f 1e fa          	endbr64 
+    1004:	48 83 ec 08          	sub    $0x8,%rsp
+    1008:	48 8b 05 d9 2f 00 00 	mov    0x2fd9(%rip),%rax        # 3fe8 <__gmon_start__@Base>
+    100f:	48 85 c0             	test   %rax,%rax
+    1012:	74 02                	je     1016 <_init+0x16>
+    1014:	ff d0                	call   *%rax
+    1016:	48 83 c4 08          	add    $0x8,%rsp
+    101a:	c3                   	ret    
+
+Дизассемблирование раздела .plt:
+
+0000000000001020 <.plt>:
+    1020:	ff 35 82 2f 00 00    	push   0x2f82(%rip)        # 3fa8 <_GLOBAL_OFFSET_TABLE_+0x8>
+    1026:	f2 ff 25 83 2f 00 00 	bnd jmp *0x2f83(%rip)        # 3fb0 <_GLOBAL_OFFSET_TABLE_+0x10>
+    102d:	0f 1f 00             	nopl   (%rax)
+    1030:	f3 0f 1e fa          	endbr64 
+    1034:	68 00 00 00 00       	push   $0x0
+    1039:	f2 e9 e1 ff ff ff    	bnd jmp 1020 <_init+0x20>
+    103f:	90                   	nop
+    1040:	f3 0f 1e fa          	endbr64 
+    1044:	68 01 00 00 00       	push   $0x1
+    1049:	f2 e9 d1 ff ff ff    	bnd jmp 1020 <_init+0x20>
+    104f:	90                   	nop
+    1050:	f3 0f 1e fa          	endbr64 
+    1054:	68 02 00 00 00       	push   $0x2
+    1059:	f2 e9 c1 ff ff ff    	bnd jmp 1020 <_init+0x20>
+    105f:	90                   	nop
+    1060:	f3 0f 1e fa          	endbr64 
+    1064:	68 03 00 00 00       	push   $0x3
+    1069:	f2 e9 b1 ff ff ff    	bnd jmp 1020 <_init+0x20>
+    106f:	90                   	nop
+
+Дизассемблирование раздела .plt.got:
+
+0000000000001070 <__cxa_finalize@plt>:
+    1070:	f3 0f 1e fa          	endbr64 
+    1074:	f2 ff 25 7d 2f 00 00 	bnd jmp *0x2f7d(%rip)        # 3ff8 <__cxa_finalize@GLIBC_2.2.5>
+    107b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+Дизассемблирование раздела .plt.sec:
+
+0000000000001080 <__stack_chk_fail@plt>:
+    1080:	f3 0f 1e fa          	endbr64 
+    1084:	f2 ff 25 2d 2f 00 00 	bnd jmp *0x2f2d(%rip)        # 3fb8 <__stack_chk_fail@GLIBC_2.4>
+    108b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+0000000000001090 <fputc@plt>:
+    1090:	f3 0f 1e fa          	endbr64 
+    1094:	f2 ff 25 25 2f 00 00 	bnd jmp *0x2f25(%rip)        # 3fc0 <fputc@GLIBC_2.2.5>
+    109b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+00000000000010a0 <pthread_create@plt>:
+    10a0:	f3 0f 1e fa          	endbr64 
+    10a4:	f2 ff 25 1d 2f 00 00 	bnd jmp *0x2f1d(%rip)        # 3fc8 <pthread_create@GLIBC_2.34>
+    10ab:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+00000000000010b0 <pthread_join@plt>:
+    10b0:	f3 0f 1e fa          	endbr64 
+    10b4:	f2 ff 25 15 2f 00 00 	bnd jmp *0x2f15(%rip)        # 3fd0 <pthread_join@GLIBC_2.34>
+    10bb:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+Дизассемблирование раздела .text:
+
+00000000000010c0 <_start>:
+    10c0:	f3 0f 1e fa          	endbr64 
+    10c4:	31 ed                	xor    %ebp,%ebp
+    10c6:	49 89 d1             	mov    %rdx,%r9
+    10c9:	5e                   	pop    %rsi
+    10ca:	48 89 e2             	mov    %rsp,%rdx
+    10cd:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+    10d1:	50                   	push   %rax
+    10d2:	54                   	push   %rsp
+    10d3:	45 31 c0             	xor    %r8d,%r8d
+    10d6:	31 c9                	xor    %ecx,%ecx
+    10d8:	48 8d 3d 24 01 00 00 	lea    0x124(%rip),%rdi        # 1203 <main>
+    10df:	ff 15 f3 2e 00 00    	call   *0x2ef3(%rip)        # 3fd8 <__libc_start_main@GLIBC_2.34>
+    10e5:	f4                   	hlt    
+    10e6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+    10ed:	00 00 00 
+
+00000000000010f0 <deregister_tm_clones>:
+    10f0:	48 8d 3d 19 2f 00 00 	lea    0x2f19(%rip),%rdi        # 4010 <__TMC_END__>
+    10f7:	48 8d 05 12 2f 00 00 	lea    0x2f12(%rip),%rax        # 4010 <__TMC_END__>
+    10fe:	48 39 f8             	cmp    %rdi,%rax
+    1101:	74 15                	je     1118 <deregister_tm_clones+0x28>
+    1103:	48 8b 05 d6 2e 00 00 	mov    0x2ed6(%rip),%rax        # 3fe0 <_ITM_deregisterTMCloneTable@Base>
+    110a:	48 85 c0             	test   %rax,%rax
+    110d:	74 09                	je     1118 <deregister_tm_clones+0x28>
+    110f:	ff e0                	jmp    *%rax
+    1111:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+    1118:	c3                   	ret    
+    1119:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000001120 <register_tm_clones>:
+    1120:	48 8d 3d e9 2e 00 00 	lea    0x2ee9(%rip),%rdi        # 4010 <__TMC_END__>
+    1127:	48 8d 35 e2 2e 00 00 	lea    0x2ee2(%rip),%rsi        # 4010 <__TMC_END__>
+    112e:	48 29 fe             	sub    %rdi,%rsi
+    1131:	48 89 f0             	mov    %rsi,%rax
+    1134:	48 c1 ee 3f          	shr    $0x3f,%rsi
+    1138:	48 c1 f8 03          	sar    $0x3,%rax
+    113c:	48 01 c6             	add    %rax,%rsi
+    113f:	48 d1 fe             	sar    %rsi
+    1142:	74 14                	je     1158 <register_tm_clones+0x38>
+    1144:	48 8b 05 a5 2e 00 00 	mov    0x2ea5(%rip),%rax        # 3ff0 <_ITM_registerTMCloneTable@Base>
+    114b:	48 85 c0             	test   %rax,%rax
+    114e:	74 08                	je     1158 <register_tm_clones+0x38>
+    1150:	ff e0                	jmp    *%rax
+    1152:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+    1158:	c3                   	ret    
+    1159:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000001160 <__do_global_dtors_aux>:
+    1160:	f3 0f 1e fa          	endbr64 
+    1164:	80 3d bd 2e 00 00 00 	cmpb   $0x0,0x2ebd(%rip)        # 4028 <completed.0>
+    116b:	75 2b                	jne    1198 <__do_global_dtors_aux+0x38>
+    116d:	55                   	push   %rbp
+    116e:	48 83 3d 82 2e 00 00 	cmpq   $0x0,0x2e82(%rip)        # 3ff8 <__cxa_finalize@GLIBC_2.2.5>
+    1175:	00 
+    1176:	48 89 e5             	mov    %rsp,%rbp
+    1179:	74 0c                	je     1187 <__do_global_dtors_aux+0x27>
+    117b:	48 8b 3d 86 2e 00 00 	mov    0x2e86(%rip),%rdi        # 4008 <__dso_handle>
+    1182:	e8 e9 fe ff ff       	call   1070 <__cxa_finalize@plt>
+    1187:	e8 64 ff ff ff       	call   10f0 <deregister_tm_clones>
+    118c:	c6 05 95 2e 00 00 01 	movb   $0x1,0x2e95(%rip)        # 4028 <completed.0>
+    1193:	5d                   	pop    %rbp
+    1194:	c3                   	ret    
+    1195:	0f 1f 00             	nopl   (%rax)
+    1198:	c3                   	ret    
+    1199:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+00000000000011a0 <frame_dummy>:
+    11a0:	f3 0f 1e fa          	endbr64 
+    11a4:	e9 77 ff ff ff       	jmp    1120 <register_tm_clones>
+
+00000000000011a9 <char_print>:
+    Создание нового стэкового фрейма и выделение памяти на стэке:
+    11a9:	f3 0f 1e fa          	endbr64 
+    11ad:	55                   	push   %rbp
+    11ae:	48 89 e5             	mov    %rsp,%rbp
+    11b1:	48 83 ec 20          	sub    $0x20,%rsp
+
+    Закидываем parametrs на стэк, приравниваем struct char_print_parms* p к parametrs:
+    11b5:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+    11b9:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+    11bd:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+
+    Создаём на стэке i = 0:
+    11c1:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%rbp)
+    11c8:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%rbp)
+
+    Прыжок на условие:
+    11cf:	eb 1f                	jmp    11f0 <char_print+0x47>
+
+    Тело цикла:
+    11d1:	48 8b 15 48 2e 00 00 	mov    0x2e48(%rip),%rdx <- stderr в rdx # 4020 <stderr@GLIBC_2.2.5>
+    11d8:	48 8b 45 f8          	mov    -0x8(%rbp),%rax   <- p в rax
+    11dc:	0f b6 00             	movzbl (%rax),%eax       <- p -> character c занулением в eax     
+    11df:	0f be c0             	movsbl %al,%eax          <- заменяем всё что не p -> character на 'F' 
+    11e2:	48 89 d6             	mov    %rdx,%rsi         <- stderr в rsi
+    11e5:	89 c7                	mov    %eax,%edi         <- "поддерживаемый" p -> character в edi  
+    11e7:	e8 a4 fe ff ff       	call   1090 <fputc@plt>  <- собственно вызов fputc@plt
+
+    Инкремент i:
+    11ec:	83 45 f4 01          	addl   $0x1,-0xc(%rbp)
+
+    Проверка условия:
+    11f0:	48 8b 45 f8          	mov    -0x8(%rbp),%rax    в rax кладём p
+    11f4:	8b 40 04             	mov    0x4(%rax),%eax     помещаем в eax p -> count
+    11f7:	39 45 f4             	cmp    %eax,-0xc(%rbp)    сравниваем p -> conut с i
+
+    Прыжок на тело цикла в случае выполнения условия:
+    11fa:	7c d5                	jl     11d1 <char_print+0x28>
+
+    Типичный конец:
+    11fc:	b8 00 00 00 00       	mov    $0x0,%eax
+    1201:	c9                   	leave  
+    1202:	c3                   	ret    
+
+0000000000001203 <main>:
+    Создание нового стэкового фрейма, выделение памяти на стэке:
+    1203:	f3 0f 1e fa          	endbr64 
+    1207:	55                   	push   %rbp
+    1208:	48 89 e5             	mov    %rsp,%rbp
+    120b:	48 83 ec 30          	sub    $0x30,%rsp
+
+    Перенос специальной переменной для защиты стэка на стэк:
+    120f:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    1218:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+    121c:	31 c0                	xor    %eax,%eax
+
+    Загрузка аргументов в регистры и вызов <pthread_create@plt> для первого потока:
+    121e:	c6 45 e8 78          	movb   $0x78,-0x18(%rbp) <- thread1_args.character = 'x';
+    1222:	c7 45 ec c8 00 00 00 	movl   $0xc8,-0x14(%rbp) <- thread1_args.count = 200;
+    1229:	48 8d 55 e8          	lea    -0x18(%rbp),%rdx  <- в rdx адрес thread1_args
+    122d:	48 8d 45 d8          	lea    -0x28(%rbp),%rax  <- в rax адрес thread1_id
+    1231:	48 89 d1             	mov    %rdx,%rcx         <- в ecx адрес thread1_args
+    1234:	48 8d 15 6e ff ff ff 	lea    -0x92(%rip),%rdx  <- в rdx адрес chr_print() # 11a9 <char_print>
+    123b:	be 00 00 00 00       	mov    $0x0,%esi         <- в esi 0
+    1240:	48 89 c7             	mov    %rax,%rdi         <- в rdi адрес thread1_id
+    1243:	e8 58 fe ff ff       	call   10a0 <pthread_create@plt>
+
+    Загрузка аргументов в регистры и вызов <pthread_create@plt> для второго потока:
+    1248:	c6 45 f0 6f          	movb   $0x6f,-0x10(%rbp)
+    124c:	c7 45 f4 c8 00 00 00 	movl   $0xc8,-0xc(%rbp)
+    1253:	48 8d 55 f0          	lea    -0x10(%rbp),%rdx
+    1257:	48 8d 45 e0          	lea    -0x20(%rbp),%rax
+    125b:	48 89 d1             	mov    %rdx,%rcx
+    125e:	48 8d 15 44 ff ff ff 	lea    -0xbc(%rip),%rdx        # 11a9 <char_print>
+    1265:	be 00 00 00 00       	mov    $0x0,%esi
+    126a:	48 89 c7             	mov    %rax,%rdi
+    126d:	e8 2e fe ff ff       	call   10a0 <pthread_create@plt>
+
+    Thread1_id в rdi, 0 в esi и вызов pthread_join@plt:
+    1272:	48 8b 45 d8          	mov    -0x28(%rbp),%rax 
+    1276:	be 00 00 00 00       	mov    $0x0,%esi
+    127b:	48 89 c7             	mov    %rax,%rdi
+    127e:	e8 2d fe ff ff       	call   10b0 <pthread_join@plt>
+
+    Thread2_id в rdi, 0 в esi и вызов pthread_join@plt:
+    1283:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+    1287:	be 00 00 00 00       	mov    $0x0,%esi
+    128c:	48 89 c7             	mov    %rax,%rdi
+    128f:	e8 1c fe ff ff       	call   10b0 <pthread_join@plt>
+
+    Зануление eax перед выходом:
+    1294:	b8 00 00 00 00       	mov    $0x0,%eax
+
+    Проверка сохранности переменной для защиты стэка:
+    1299:	48 8b 55 f8          	mov    -0x8(%rbp),%rdx
+    129d:	64 48 2b 14 25 28 00 	sub    %fs:0x28,%rdx
+    12a4:	00 00 
+    12a6:	74 05                	je     12ad <main+0xaa>
+    12a8:	e8 d3 fd ff ff       	call   1080 <__stack_chk_fail@plt>
+
+    Типичный конец:
+    12ad:	c9                   	leave  
+    12ae:	c3                   	ret    
+
+Дизассемблирование раздела .fini:
+
+00000000000012b0 <_fini>:
+    12b0:	f3 0f 1e fa          	endbr64 
+    12b4:	48 83 ec 08          	sub    $0x8,%rsp
+    12b8:	48 83 c4 08          	add    $0x8,%rsp
+    12bc:	c3                   	ret    

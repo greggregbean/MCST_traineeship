@@ -1,0 +1,145 @@
+<main>:
+    Штука для безопасности, выделение памяти:
+    endbr64 
+    sub    $0x48,%rsp
+
+    То, что лежит по адресу rip + 0xfa0, кладём в xmm0:
+    movdqa 0xfa0(%rip),%xmm0    
+
+    Кладём 5 в edx:   
+    mov    $0x5,%edx
+
+    Заготовка для будущей проверки стэка:
+    mov    %fs:0x28,%rax
+    mov    %rax,0x38(%rsp)
+    xor    %eax,%eax
+
+    В rsi кладём rsp + 20:
+    lea    0x20(%rsp),%rsi
+
+    В rdi кладём то, что лежит на верхушке стэка
+    mov    %rsp,%rdi
+    
+    На стэк кладём 4:
+    movl   $0x4,0x10(%rsp)
+    
+    То, что лежало в xmm0, кладём на стэк:
+    movaps %xmm0,(%rsp)
+
+    То, что лежит по адресу rip + 0xf7f, кладём в xmm0:
+    movdqa 0xf7f(%rip),%xmm0        #
+
+    Кладём 9 на стэк:
+    movl   $0x9,0x30(%rsp)
+
+    То, что лежало в xmm0, кладём на стэк:
+    movaps %xmm0,0x20(%rsp)
+
+    Как итог, сначала мы положили 5 в edx, эта 5 отвечает за число элементов в массиве.
+    Первые 4 элемента в каждом из массивов мы расматриваем, как единое целое, и перемещаем
+    их на регистр xmm0 и с него на стэк с помощью комманд movdqa и movaps соответственно. 
+    А 5-ый, который не влез в размер регистра xmm0 128 бит, кладём в стэк отдельно, но рядом 
+    с соответсвующим массивом.
+
+    Вызов arr_sum:
+    call   11c0 <arr_sum>
+
+    Проверка сохранности стэка, выход в случае успеха, вызов специальной процедуры
+    в случае ошибки (всё встречалось в предыдущей программе):
+    mov    0x38(%rsp),%rax
+    sub    %fs:0x28,%rax
+    jne    10ca <main+0x6a>
+    xor    %eax,%eax
+    add    $0x48,%rsp
+    ret    
+    call   1050 <__stack_chk_fail@plt>
+    nop
+
+
+<arr_sum>:
+    11c0:	f3 0f 1e fa          	endbr64 
+    11c4:	55                   	push   %rbp
+
+    Переместили 5 в r9:
+    11c5:	4c 63 ca             	movslq %edx,%r9
+
+    11c8:	48 89 f9             	mov    %rdi,%rcx
+    11cb:	48 89 e5             	mov    %rsp,%rbp
+    11ce:	48 83 ec 10          	sub    $0x10,%rsp
+    11d2:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    11d9:	00 00 
+    11db:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+    11df:	31 c0                	xor    %eax,%eax
+    11e1:	4a 8d 04 8d 0f 00 00 	lea    0xf(,%r9,4),%rax
+    11e8:	00 
+    11e9:	49 89 e0             	mov    %rsp,%r8
+    11ec:	48 89 c7             	mov    %rax,%rdi
+    11ef:	48 25 00 f0 ff ff    	and    $0xfffffffffffff000,%rax
+    11f5:	49 29 c0             	sub    %rax,%r8
+    11f8:	48 83 e7 f0          	and    $0xfffffffffffffff0,%rdi
+    11fc:	4c 39 c4             	cmp    %r8,%rsp
+    11ff:	74 15                	je     1216 <arr_sum+0x56>
+    1201:	48 81 ec 00 10 00 00 	sub    $0x1000,%rsp
+    1208:	48 83 8c 24 f8 0f 00 	orq    $0x0,0xff8(%rsp)
+    120f:	00 00 
+    1211:	4c 39 c4             	cmp    %r8,%rsp
+    1214:	75 eb                	jne    1201 <arr_sum+0x41>
+    1216:	81 e7 ff 0f 00 00    	and    $0xfff,%edi
+    121c:	48 29 fc             	sub    %rdi,%rsp
+    121f:	48 85 ff             	test   %rdi,%rdi
+    1222:	0f 85 a8 00 00 00    	jne    12d0 <arr_sum+0x110>
+    1228:	48 89 e7             	mov    %rsp,%rdi
+    122b:	85 d2                	test   %edx,%edx
+    122d:	0f 8e 7f 00 00 00    	jle    12b2 <arr_sum+0xf2>
+    1233:	8d 42 ff             	lea    -0x1(%rdx),%eax
+    1236:	83 f8 02             	cmp    $0x2,%eax
+    1239:	0f 86 9c 00 00 00    	jbe    12db <arr_sum+0x11b>
+    123f:	41 89 d0             	mov    %edx,%r8d
+    1242:	31 c0                	xor    %eax,%eax
+    1244:	41 c1 e8 02          	shr    $0x2,%r8d
+    1248:	49 c1 e0 04          	shl    $0x4,%r8
+    124c:	0f 1f 40 00          	nopl   0x0(%rax)
+    1250:	f3 0f 6f 04 01       	movdqu (%rcx,%rax,1),%xmm0
+    1255:	f3 0f 6f 14 06       	movdqu (%rsi,%rax,1),%xmm2
+    125a:	66 0f fe c2          	paddd  %xmm2,%xmm0
+    125e:	0f 11 04 07          	movups %xmm0,(%rdi,%rax,1)
+    1262:	48 83 c0 10          	add    $0x10,%rax
+    1266:	4c 39 c0             	cmp    %r8,%rax
+    1269:	75 e5                	jne    1250 <arr_sum+0x90>
+    126b:	41 89 d0             	mov    %edx,%r8d
+    126e:	41 83 e0 fc          	and    $0xfffffffc,%r8d
+    1272:	44 89 c0             	mov    %r8d,%eax
+    1275:	44 39 c2             	cmp    %r8d,%edx
+    1278:	74 38                	je     12b2 <arr_sum+0xf2>
+    127a:	44 29 c2             	sub    %r8d,%edx
+    127d:	83 fa 01             	cmp    $0x1,%edx
+    1280:	74 25                	je     12a7 <arr_sum+0xe7>
+    1282:	f3 42 0f 7e 04 81    	movq   (%rcx,%r8,4),%xmm0
+    1288:	f3 42 0f 7e 0c 86    	movq   (%rsi,%r8,4),%xmm1
+    128e:	66 0f fe c1          	paddd  %xmm1,%xmm0
+    1292:	66 42 0f d6 04 87    	movq   %xmm0,(%rdi,%r8,4)
+    1298:	41 89 d0             	mov    %edx,%r8d
+    129b:	41 83 e0 fe          	and    $0xfffffffe,%r8d
+    129f:	44 01 c0             	add    %r8d,%eax
+    12a2:	44 39 c2             	cmp    %r8d,%edx
+    12a5:	74 0b                	je     12b2 <arr_sum+0xf2>
+    12a7:	48 98                	cltq   
+    12a9:	8b 14 86             	mov    (%rsi,%rax,4),%edx
+    12ac:	03 14 81             	add    (%rcx,%rax,4),%edx
+    12af:	89 14 87             	mov    %edx,(%rdi,%rax,4)
+    12b2:	42 8b 04 8f          	mov    (%rdi,%r9,4),%eax
+    12b6:	48 8b 55 f8          	mov    -0x8(%rbp),%rdx
+    12ba:	64 48 2b 14 25 28 00 	sub    %fs:0x28,%rdx
+    12c1:	00 00 
+    12c3:	75 1d                	jne    12e2 <arr_sum+0x122>
+    12c5:	c9                   	leave  
+    12c6:	c3                   	ret    
+    12c7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+    12ce:	00 00 
+    12d0:	48 83 4c 3c f8 00    	orq    $0x0,-0x8(%rsp,%rdi,1)
+    12d6:	e9 4d ff ff ff       	jmp    1228 <arr_sum+0x68>
+    12db:	45 31 c0             	xor    %r8d,%r8d
+    12de:	31 c0                	xor    %eax,%eax
+    12e0:	eb 98                	jmp    127a <arr_sum+0xba>
+    12e2:	e8 69 fd ff ff       	call   1050 <__stack_chk_fail@plt>
+   

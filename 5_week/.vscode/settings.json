@@ -1,0 +1,11 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "types.h": "c",
+        "signal.h": "c",
+        "sigset_t.h": "c",
+        "__sigset_t.h": "c",
+        "sigaction.h": "c",
+        "siginfo.h": "c"
+    }
+}
